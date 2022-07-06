@@ -9,10 +9,14 @@ class HodlHodl:
 
         curr = curr.upper()
         api = f"https://hodlhodl.com/api/v1/offers?filters[side]={direction}&filters[include_global]=true&filters[currency_code]={curr}&filters[only_working_now]=true&sort[by]=price"
+        try:
+            f = session.get(api)
+            jsonweb = f.json()
+        except Exception as e:
+            print("Please, make sure you are running TOR!")
+            print(e)
+            exit(1)
 
-        f = session.get(api)
-        jsonweb = f.json()
-        f.close()
         alloffers = jsonweb['offers']
 
         lista = []

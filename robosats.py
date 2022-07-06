@@ -29,12 +29,12 @@ class Robosats:
 
         try:
             f = session.get(robosatsTor + command)
-        except IOError:
+        except Exception as e:
             print("Please, make sure you are running TOR!")
+            print(e)
             exit(1)
 
         values = f.json()
-        f.close()
 
         alloffers = []
 

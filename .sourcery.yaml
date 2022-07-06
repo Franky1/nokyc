@@ -1,0 +1,5 @@
+refactor:
+  python_version: '3.6'
+  skip:
+    - assign-if-exp
+    - merge-dict-assign

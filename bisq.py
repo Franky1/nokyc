@@ -6,29 +6,27 @@ class Bisq:
 
     @staticmethod
     def getOffers(fiat, direction, refprice, session):
-
         # fiat = eur, usd,
         # direction = buy or sell
         # refprice = int
-        # tor = 1 or 0
 
         bisqBaseUrlTor = 'http://bisqmktse2cabavbr2xjq7xw3h6g5ottemo5rolfcwt6aly6tp5fdryd.onion'
 
         bisqApi = f"{bisqBaseUrlTor}/api/offers?market=btc_{fiat.upper()}&direction={direction.upper()}"
         try:
             f = session.get(bisqApi)
-        except IOError:
+        except Exception as e:
             print("Please, make sure you are running TOR!")
+            print(e)
             exit(1)
 
         values = f.json()
-        f.close()
 
         key = f"btc_{fiat}"
 
         alloffers = []
 
-        for line in values[key][direction + 's' ]:
+        for line in values[key][f'{direction}s']:
             offer = {}
             offer['exchange'] = 'Bisq'
             offer['price'] = int(float(line['price']))
@@ -48,7 +46,6 @@ class Bisq:
 
         f = session.get(bisqApi)
         priceapi = f.json()
-        f.close()
         for currency in priceapi['data']:
             if (currency['currencyCode'].lower()==fiat):
                 return int(float(currency['price']))

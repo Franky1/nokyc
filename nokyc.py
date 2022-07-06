@@ -27,6 +27,12 @@ def get_tor_session():
                     'https': 'socks5h://127.0.0.1:' + config['DEFAULT']['TOR_PORT']}
     return session
 
+def get_tor_session_from_docker():
+    session = requests.session()
+    session.proxies = {'http':  'socks5h://host.docker.internal:' + config['DEFAULT']['TOR_PORT'],
+                    'https': 'socks5h://host.docker.internal:' + config['DEFAULT']['TOR_PORT']}
+    return session
+
 def sigint_handler(signal, frame):
     print ('Cancelled.')
     sys.exit(0)
@@ -83,7 +89,7 @@ if __name__ == "__main__":
 
     signal.signal(signal.SIGINT, sigint_handler)
     fiat, direction, limit = get_user_arguments()
-    session = get_tor_session()
+    session = get_tor_session_from_docker()
 
     price_exch = Bisq.getFiatPrice(fiat, session)
 
@@ -105,8 +111,8 @@ if __name__ == "__main__":
 
     print(f"BTC {direction} offers:\n")
 
-    print(f"{'Exchange':8} {'Price':12} {'Dif':6} {'BTC min':8} {'BTC max':9} {'Min':6} {'Max':5} {'Method'}")
+    print(f"{'Exchange':8} {'Price':>13} {'Diff':>6} {'BTC min':>8} {'BTC max':>7} {'Min':>7} {'Max':>7} Method")
 
     for offer in allOffers:
         if ((direction=="sell" and offer['dif']<limit) or (direction=="buy" and offer['dif']>-limit)) and offer['method'].lower() not in config['DEFAULT']['avoid_methods']:
-            print(f"{offer['exchange']:8}{offer['price']:8n} {fiat.upper():4} {offer['dif']:4.1f}% {offer['min_btc']:8.4f} {offer['max_btc']:8.4f} {offer['min_amount']:7n} {offer['max_amount']:7n} {offer['method']}")
+            print(f"{offer['exchange']:8} {offer['price']:8n} {fiat.upper():>4} {offer['dif']:4.1f}% {offer['min_btc']:8.4f} {offer['max_btc']:8.4f} {offer['min_amount']:>7n} {offer['max_amount']:>7n} {offer['method']}")
